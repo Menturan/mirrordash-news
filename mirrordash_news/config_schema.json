@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "News Feed Settings",
+  "type": "object",
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "title": "Enabled",
+      "description": "Enable or disable this module."
+    },
+    "position": {
+      "type": "string",
+      "default": "bottom_center",
+      "enum": [
+        "top_left",
+        "top_center",
+        "top_right",
+        "middle_left",
+        "middle_center",
+        "middle_right",
+        "bottom_left",
+        "bottom_center",
+        "bottom_right"
+      ],
+      "title": "Screen Position",
+      "description": "Where to display this module on the mirror screen."
+    },
+    "interval": {
+      "type": "integer",
+      "default": 600,
+      "title": "Update Interval (Seconds)",
+      "description": "Time to wait between feed updates (e.g. 600 = 10 minutes)."
+    },
+    "max_items": {
+      "type": "integer",
+      "default": 5,
+      "title": "Max Headlines",
+      "description": "Maximum number of news headlines to display."
+    },
+    "show_preamble": {
+      "type": "boolean",
+      "default": true,
+      "title": "Show Preamble",
+      "description": "Show a brief summary description under the headline."
+    },
+    "feeds": {
+      "type": "array",
+      "title": "News Feeds",
+      "description": "List of XML RSS or Atom feeds.",
+      "default": [
+        {
+          "name": "BBC News",
+          "url": "http://feeds.bbci.co.uk/news/rss.xml"
+        }
+      ],
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Source Name",
+            "description": "Friendly name of the news source (e.g., BBC News)."
+          },
+          "url": {
+            "type": "string",
+            "title": "Feed URL",
+            "description": "URL to the RSS or Atom XML feed."
+          }
+        },
+        "required": ["name", "url"]
+      }
+    }
+  },
+  "required": ["enabled", "position", "interval"]
+}
