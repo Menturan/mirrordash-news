@@ -50,5 +50,9 @@ Most news sites provide free RSS feeds:
 
 Simply add the URL to the `"feeds"` array.
 
+## Screenshot
+
+![News Widget Screenshot](screenshot.png)
+
 ## License
-MIT
+[PolyForm Noncommercial License 1.0.0](LICENSE.md)
