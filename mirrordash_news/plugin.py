@@ -171,6 +171,7 @@ class NewsModule:
                 feed_configs = [BUILTIN_FEED_MAP[key] for key in builtin_keys if key in BUILTIN_FEED_MAP] + custom_feeds
                 max_items = self.config.get("max_items", 5)
                 show_preamble = self.config.get("show_preamble", True)
+                show_header = self.config.get("show_header", True)
                 
                 # Check for feeds
                 if not feed_configs:
@@ -181,7 +182,8 @@ class NewsModule:
                         width=self.width,
                         height=self.height,
                         scroll_overflow=self.scroll_overflow,
-                        scroll_speed=self.scroll_speed
+                        scroll_speed=self.scroll_speed,
+                        show_header=show_header
                     )
                     await broadcast_func(self.name, html)
                     await asyncio.sleep(self.interval)
@@ -201,7 +203,8 @@ class NewsModule:
                         scroll_overflow=self.scroll_overflow,
                         scroll_speed=self.scroll_speed,
                         error=self.translate("error_fetching", "Error loading news") if len(news_items) == 0 else None,
-                        last_checked=datetime.now().strftime("%H:%M")
+                        last_checked=datetime.now().strftime("%H:%M"),
+                        show_header=show_header
                     )
                 except Exception as fetch_err:
                     logger.error(f"Error fetching news feeds: {fetch_err}")
@@ -212,7 +215,8 @@ class NewsModule:
                         width=self.width,
                         height=self.height,
                         scroll_overflow=self.scroll_overflow,
-                        scroll_speed=self.scroll_speed
+                        scroll_speed=self.scroll_speed,
+                        show_header=show_header
                     )
                 
                 await broadcast_func(self.name, html)

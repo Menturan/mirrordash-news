@@ -44,6 +44,12 @@
       "title": "Show Preamble",
       "description": "Show a brief summary description under the headline."
     },
+    "show_header": {
+      "type": "boolean",
+      "default": true,
+      "title": "Show Header",
+      "description": "Show or hide the module's header/title."
+    },
     "builtin_feeds": {
       "type": "array",
       "title": "Built-in Feeds",
