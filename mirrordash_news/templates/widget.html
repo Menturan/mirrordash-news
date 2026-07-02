@@ -1,4 +1,4 @@
-<div class="news-container">
+<div class="news-container" style="width: {{ width }}px; {% if height > 0 %}height: {{ height }}px;{% endif %}">
     {% if not error or items %}
         <h2 class="module-header">{{ translations.get("title", "Latest News") }}</h2>
     {% endif %}
@@ -12,19 +12,55 @@
         {% endif %}
         
         {% if items %}
-            <div class="news-items">
-                {% for item in items %}
-                    <div class="news-item">
-                        <div class="news-meta">
-                            <span class="news-source">{{ item.source }}</span>
+            {% if scroll_overflow and height > 0 %}
+                {% set speed_multiplier = 12 if scroll_speed == 'slow' else (4 if scroll_speed == 'fast' else 8) %}
+                <div class="news-scroll-container">
+                    <div class="news-items news-items-scrolling" style="animation-duration: {{ items|length * speed_multiplier }}s;">
+                        <!-- First list -->
+                        <div class="news-items-group">
+                            {% for item in items %}
+                                <div class="news-item">
+                                    <div class="news-meta">
+                                        <span class="news-source">{{ item.source }}</span>
+                                    </div>
+                                    <div class="news-headline">{{ item.title }}</div>
+                                    {% if show_preamble and item.preamble %}
+                                        <div class="news-preamble">{{ item.preamble }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
                         </div>
-                        <div class="news-headline">{{ item.title }}</div>
-                        {% if show_preamble and item.preamble %}
-                            <div class="news-preamble">{{ item.preamble }}</div>
-                        {% endif %}
+                        <!-- Second list for continuous loop -->
+                        <div class="news-items-group" aria-hidden="true">
+                            {% for item in items %}
+                                <div class="news-item">
+                                    <div class="news-meta">
+                                        <span class="news-source">{{ item.source }}</span>
+                                    </div>
+                                    <div class="news-headline">{{ item.title }}</div>
+                                    {% if show_preamble and item.preamble %}
+                                        <div class="news-preamble">{{ item.preamble }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% else %}
+                <div class="news-items">
+                    {% for item in items %}
+                        <div class="news-item">
+                            <div class="news-meta">
+                                <span class="news-source">{{ item.source }}</span>
+                            </div>
+                            <div class="news-headline">{{ item.title }}</div>
+                            {% if show_preamble and item.preamble %}
+                                <div class="news-preamble">{{ item.preamble }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         {% endif %}
     </div>
 </div>
@@ -33,10 +69,9 @@
 .news-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: 420px;
     color: var(--color-standard-gray, #999999);
     font-family: var(--mirror-font-family, sans-serif);
+    box-sizing: border-box;
 }
 
 /* Snapping alignment based on mirror region containers */
@@ -64,12 +99,46 @@
 .news-body {
     width: 100%;
     margin-top: 8px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .news-items {
     display: flex;
     flex-direction: column;
     gap: 16px;
+}
+
+/* Auto-scroll container layout */
+.news-scroll-container {
+    overflow: hidden;
+    position: relative;
+    flex: 1;
+    width: 100%;
+    
+    /* Elegant top/bottom fade gradient masks to smoothly fade items in/out */
+    mask-image: linear-gradient(to bottom, transparent, black 16px, black calc(100% - 16px), transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 16px, black calc(100% - 16px), transparent);
+}
+
+.news-items-scrolling {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    animation: newsScrollVertical linear infinite;
+}
+
+.news-items-scrolling:hover {
+    animation-play-state: paused;
+}
+
+.news-items-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0;
 }
 
 .news-item {
@@ -154,5 +223,14 @@
 @keyframes newsFadeIn {
     from { opacity: 0; transform: translateY(2px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes newsScrollVertical {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-50%);
+    }
 }
 </style>

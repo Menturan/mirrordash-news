@@ -87,6 +87,33 @@ def fetch_feed(url: str) -> list[dict]:
         logger.error(f"Error fetching feed {url}: {e}")
     return []
 
+BUILTIN_FEED_MAP = {
+    "bbc_news": {
+        "name": "BBC News",
+        "url": "http://feeds.bbci.co.uk/news/rss.xml"
+    },
+    "cnn_edition": {
+        "name": "CNN",
+        "url": "http://rss.cnn.com/rss/edition.rss"
+    },
+    "nyt_homepage": {
+        "name": "NYT",
+        "url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
+    },
+    "sr_ekot": {
+        "name": "SR Ekot",
+        "url": "https://api.sr.se/api/rss/program/83"
+    },
+    "aftonbladet_nyheter": {
+        "name": "Aftonbladet",
+        "url": "https://rss.aftonbladet.se/rss2/small/pages/sections/nyheter/"
+    },
+    "expressen_nyheter": {
+        "name": "Expressen",
+        "url": "https://feeds.expressen.se/nyheter/"
+    }
+}
+
 class NewsModule:
     def __init__(self, config):
         self.config = config
@@ -97,6 +124,12 @@ class NewsModule:
         self.cache_dir = config.get("cache_dir")
         self.translations = config.get("translations", {})
         self.event_bus = config.get("event_bus")
+        
+        # Dimensions and scrolling
+        self.width = config.get("width", 420)
+        self.height = config.get("height", 300)
+        self.scroll_overflow = config.get("scroll_overflow", False)
+        self.scroll_speed = config.get("scroll_speed", "medium")
         
         logger.info(f"Initializing {self.name} module")
 
@@ -120,15 +153,22 @@ class NewsModule:
         tasks = [fetch_one(cfg) for cfg in feed_configs]
         results = await asyncio.gather(*tasks)
         
-        # Flatten all lists
-        all_items = [item for sublist in results for item in sublist]
+        # Interleave lists to ensure a balanced mix of sources in the limited view
+        all_items = []
+        max_len = max(len(sublist) for sublist in results) if results else 0
+        for i in range(max_len):
+            for sublist in results:
+                if i < len(sublist):
+                    all_items.append(sublist[i])
         return all_items
 
     async def run_loop(self, broadcast_func):
         logger.info(f"Starting {self.name} run loop")
         while True:
             try:
-                feed_configs = self.config.get("feeds", [])
+                builtin_keys = self.config.get("builtin_feeds", ["bbc_news"])
+                custom_feeds = self.config.get("custom_feeds", self.config.get("feeds", []))
+                feed_configs = [BUILTIN_FEED_MAP[key] for key in builtin_keys if key in BUILTIN_FEED_MAP] + custom_feeds
                 max_items = self.config.get("max_items", 5)
                 show_preamble = self.config.get("show_preamble", True)
                 
@@ -137,7 +177,11 @@ class NewsModule:
                     html = self.render_template(
                         "widget.html",
                         error=self.translate("no_feeds", "No feeds configured"),
-                        items=[]
+                        items=[],
+                        width=self.width,
+                        height=self.height,
+                        scroll_overflow=self.scroll_overflow,
+                        scroll_speed=self.scroll_speed
                     )
                     await broadcast_func(self.name, html)
                     await asyncio.sleep(self.interval)
@@ -152,6 +196,10 @@ class NewsModule:
                         "widget.html",
                         items=news_items,
                         show_preamble=show_preamble,
+                        width=self.width,
+                        height=self.height,
+                        scroll_overflow=self.scroll_overflow,
+                        scroll_speed=self.scroll_speed,
                         error=self.translate("error_fetching", "Error loading news") if len(news_items) == 0 else None,
                         last_checked=datetime.now().strftime("%H:%M")
                     )
@@ -160,7 +208,11 @@ class NewsModule:
                     html = self.render_template(
                         "widget.html",
                         items=[],
-                        error=self.translate("error_fetching", "Error loading news")
+                        error=self.translate("error_fetching", "Error loading news"),
+                        width=self.width,
+                        height=self.height,
+                        scroll_overflow=self.scroll_overflow,
+                        scroll_speed=self.scroll_speed
                     )
                 
                 await broadcast_func(self.name, html)

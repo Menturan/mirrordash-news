@@ -44,23 +44,36 @@
       "title": "Show Preamble",
       "description": "Show a brief summary description under the headline."
     },
-    "feeds": {
+    "builtin_feeds": {
       "type": "array",
-      "title": "News Feeds",
-      "description": "List of XML RSS or Atom feeds.",
-      "default": [
-        {
-          "name": "BBC News",
-          "url": "http://feeds.bbci.co.uk/news/rss.xml"
-        }
-      ],
+      "title": "Built-in Feeds",
+      "description": "Select from our list of pre-configured Swedish and International news feeds.",
+      "default": ["bbc_news"],
+      "items": {
+        "type": "string",
+        "enum": [
+          "bbc_news",
+          "cnn_edition",
+          "nyt_homepage",
+          "sr_ekot",
+          "aftonbladet_nyheter",
+          "expressen_nyheter"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "custom_feeds": {
+      "type": "array",
+      "title": "Custom News Feeds",
+      "description": "Add your own XML RSS or Atom feed URLs.",
+      "default": [],
       "items": {
         "type": "object",
         "properties": {
           "name": {
             "type": "string",
             "title": "Source Name",
-            "description": "Friendly name of the news source (e.g., BBC News)."
+            "description": "Friendly name of the news source (e.g., SVT Nyheter)."
           },
           "url": {
             "type": "string",
@@ -70,7 +83,34 @@
         },
         "required": ["name", "url"]
       }
+    },
+    "width": {
+      "type": "integer",
+      "default": 420,
+      "minimum": 100,
+      "title": "Width (px)",
+      "description": "Width of the news widget in pixels."
+    },
+    "height": {
+      "type": "integer",
+      "default": 300,
+      "minimum": 0,
+      "title": "Height (px)",
+      "description": "Height limit in pixels. Use 0 for no height limit (auto height)."
+    },
+    "scroll_overflow": {
+      "type": "boolean",
+      "default": false,
+      "title": "Auto-scroll Overflow",
+      "description": "Enable vertical auto-scrolling. Requires a height limit greater than 0."
+    },
+    "scroll_speed": {
+      "type": "string",
+      "default": "medium",
+      "enum": ["slow", "medium", "fast"],
+      "title": "Scroll Speed",
+      "description": "Speed of the auto-scrolling animation."
     }
   },
-  "required": ["enabled", "position", "interval"]
+  "required": ["enabled", "position", "interval", "width", "height", "scroll_overflow", "scroll_speed", "builtin_feeds", "custom_feeds"]
 }
