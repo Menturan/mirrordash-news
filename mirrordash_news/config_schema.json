@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "News Feed Settings",
+  "title": "News",
+  "description": "Headlines from the news feeds you choose.",
   "type": "object",
   "properties": {
     "enabled": {
