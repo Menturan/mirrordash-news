@@ -1,6 +1,6 @@
 [project]
 name = "mirrordash-news"
-version = "0.1.1"
+version = "1.0.1"
 description = "Fetches and displays news headlines and preambles from configurable RSS/Atom feeds."
 authors = [
     { name = "MirrorDash Developer" }
