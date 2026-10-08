@@ -4,29 +4,6 @@
   "description": "Headlines from the news feeds you choose.",
   "type": "object",
   "properties": {
-    "enabled": {
-      "type": "boolean",
-      "default": true,
-      "title": "Enabled",
-      "description": "Enable or disable this module."
-    },
-    "position": {
-      "type": "string",
-      "default": "bottom_center",
-      "enum": [
-        "top_left",
-        "top_center",
-        "top_right",
-        "middle_left",
-        "middle_center",
-        "middle_right",
-        "bottom_left",
-        "bottom_center",
-        "bottom_right"
-      ],
-      "title": "Screen Position",
-      "description": "Where to display this module on the mirror screen."
-    },
     "interval": {
       "type": "integer",
       "default": 600,
@@ -55,7 +32,9 @@
       "type": "array",
       "title": "Built-in Feeds",
       "description": "Select from our list of pre-configured Swedish and International news feeds.",
-      "default": ["bbc_news"],
+      "default": [
+        "bbc_news"
+      ],
       "items": {
         "type": "string",
         "enum": [
@@ -88,7 +67,10 @@
             "description": "URL to the RSS or Atom XML feed."
           }
         },
-        "required": ["name", "url"]
+        "required": [
+          "name",
+          "url"
+        ]
       }
     },
     "width": {
@@ -114,10 +96,22 @@
     "scroll_speed": {
       "type": "string",
       "default": "medium",
-      "enum": ["slow", "medium", "fast"],
+      "enum": [
+        "slow",
+        "medium",
+        "fast"
+      ],
       "title": "Scroll Speed",
       "description": "Speed of the auto-scrolling animation."
     }
   },
-  "required": ["enabled", "position", "interval", "width", "height", "scroll_overflow", "scroll_speed", "builtin_feeds", "custom_feeds"]
+  "required": [
+    "interval",
+    "width",
+    "height",
+    "scroll_overflow",
+    "scroll_speed",
+    "builtin_feeds",
+    "custom_feeds"
+  ]
 }

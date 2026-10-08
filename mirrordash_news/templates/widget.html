@@ -5,10 +5,7 @@
     
     <div class="news-body">
         {% if error %}
-            <div class="news-error">
-                <i data-lucide="alert-circle" class="news-error-icon"></i>
-                <span>{{ error }}</span>
-            </div>
+            <div class="module-message"><i data-lucide="cloud-off"></i><span>{{ error }}</span></div>
         {% endif %}
         
         {% if items %}
@@ -65,35 +62,13 @@
     </div>
 </div>
 
+<!-- Header and messages come from modules.css; only the news list and its scrolling are here -->
 <style>
 .news-container {
     display: flex;
     flex-direction: column;
     color: var(--color-standard-gray, #999999);
-    font-family: var(--mirror-font-family, sans-serif);
     box-sizing: border-box;
-}
-
-/* Snapping alignment based on mirror region containers */
-#top_right .news-container,
-#middle_right .news-container,
-#bottom_right .news-container {
-    align-items: flex-end;
-    text-align: right;
-}
-
-#top_left .news-container,
-#middle_left .news-container,
-#bottom_left .news-container {
-    align-items: flex-start;
-    text-align: left;
-}
-
-#top_center .news-container,
-#middle_center .news-container,
-#bottom_center .news-container {
-    align-items: center;
-    text-align: center;
 }
 
 .news-body {
@@ -153,24 +128,6 @@
     width: 100%;
 }
 
-#top_right .news-meta,
-#middle_right .news-meta,
-#bottom_right .news-meta {
-    justify-content: flex-end;
-}
-
-#top_left .news-meta,
-#middle_left .news-meta,
-#bottom_left .news-meta {
-    justify-content: flex-start;
-}
-
-#top_center .news-meta,
-#middle_center .news-meta,
-#bottom_center .news-meta {
-    justify-content: center;
-}
-
 .news-source {
     font-size: 11px;
     font-weight: 600;
@@ -202,22 +159,6 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.news-error {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--color-error, #ffb4ab);
-    font-size: 13px;
-    padding: 8px 0;
-}
-
-.news-error-icon {
-    width: 16px;
-    height: 16px;
-    stroke-width: 1.5px;
-    flex-shrink: 0;
 }
 
 @keyframes newsFadeIn {

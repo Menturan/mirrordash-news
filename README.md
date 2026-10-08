@@ -6,13 +6,14 @@ An RSS and Atom news feed reader module for MirrorDash. It fetches headlines and
 - **RSS & Atom Support**: Clean XML parsing that supports standard RSS channels and Atom entry namespaces.
 - **HTML/XML Tag Stripping**: Automatically cleans up and strips HTML tags, formatting entities, and extra whitespace from titles and preambles.
 - **Parallel Fetching**: Loads all configured news sources simultaneously in background threads for rapid refreshes.
-- **Glanceable HUD Design**: Snaps layout alignments (left/right/center) depending on its regional position on the mirror, and wraps text cleanly using CSS line-clamping.
+- **Glanceable HUD Design**: wraps text cleanly and cuts long summaries after three lines.
 
 ## Installation
 
-```bash
-uv pip install -e .
-```
+On the mirror's admin page, open **Modules**: the module is in the list, install it with one click.
+Or paste `git+https://github.com/Menturan/mirrordash-news.git` under **Modules → Install a Module from GitHub**.
+
+Developing it: `uv run pytest` runs its tests, and `uvx mirrordash-sdk validate .` checks it.
 
 ## Screenshot
 
