@@ -128,7 +128,7 @@ class NewsModule:
         async def fetch_one(feed_config):
             name = feed_config["name"]
             url = feed_config["url"]
-            data, error = await self.fetch(url, timeout=8)  # the last answer if the feed is down
+            data, error = await self.fetch(url, timeout=8, max_age=self.interval)  # the last answer if the feed is down
             try:
                 items = parse_feed_xml(data) if data else []
             except ET.ParseError as e:
