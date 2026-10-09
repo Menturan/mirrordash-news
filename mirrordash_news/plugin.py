@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import urllib.request
 import xml.etree.ElementTree as ET
 import re
 import html
@@ -71,22 +70,6 @@ def parse_feed_xml(xml_bytes: bytes) -> list[dict]:
                 })
     return items
 
-def fetch_feed(url: str) -> list[dict]:
-    """Synchronous fetch and parse of an RSS/Atom feed URL."""
-    req = urllib.request.Request(
-        url,
-        headers={"User-Agent": "MirrorDash/0.1.0"}
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=8) as response:
-            if response.status == 200:
-                return parse_feed_xml(response.read())
-            else:
-                logger.error(f"Feed URL {url} returned HTTP status {response.status}")
-    except Exception as e:
-        logger.error(f"Error fetching feed {url}: {e}")
-    return []
-
 BUILTIN_FEED_MAP = {
     "bbc_news": {
         "name": "BBC News",
@@ -145,7 +128,12 @@ class NewsModule:
         async def fetch_one(feed_config):
             name = feed_config["name"]
             url = feed_config["url"]
-            items = await asyncio.to_thread(fetch_feed, url)
+            data, error = await self.fetch(url, timeout=8)  # the last answer if the feed is down
+            try:
+                items = parse_feed_xml(data) if data else []
+            except ET.ParseError as e:
+                logger.error(f"Feed {name} is not valid RSS/Atom: {e}")
+                items = []
             for item in items:
                 item["source"] = name
             return items

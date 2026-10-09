@@ -2,7 +2,7 @@ import pytest
 import json
 import asyncio
 from unittest.mock import MagicMock, AsyncMock, patch, ANY
-from mirrordash_news.plugin import NewsModule, strip_html, parse_feed_xml, fetch_feed
+from mirrordash_news.plugin import NewsModule, strip_html, parse_feed_xml
 
 MOCK_RSS_DATA = """<?xml version="1.0" encoding="utf-8" ?>
 <rss version="2.0">
@@ -59,44 +59,24 @@ def test_parse_feed_xml_atom():
     assert items[1]["title"] == "Atom Headline 2"
     assert items[1]["preamble"] == "Atom content 2"
 
-@patch("urllib.request.urlopen")
-def test_fetch_feed_success(mock_urlopen):
-    mock_response = MagicMock()
-    mock_response.status = 200
-    mock_response.read.return_value = MOCK_RSS_DATA.encode("utf-8")
-    mock_urlopen.return_value.__enter__.return_value = mock_response
-
-    items = fetch_feed("http://localhost/news.xml")
-    assert len(items) == 2
-    assert items[0]["title"] == "Headline 1 & SVT"
-
-@patch("urllib.request.urlopen")
-def test_fetch_feed_failure(mock_urlopen):
-    mock_response = MagicMock()
-    mock_response.status = 404
-    mock_urlopen.return_value.__enter__.return_value = mock_response
-
-    items = fetch_feed("http://localhost/news.xml")
-    assert len(items) == 0
-
 @pytest.mark.asyncio
-@patch("urllib.request.urlopen")
-async def test_fetch_all_feeds_mapping(mock_urlopen):
-    mock_response = MagicMock()
-    mock_response.status = 200
-    mock_response.read.return_value = MOCK_RSS_DATA.encode("utf-8")
-    mock_urlopen.return_value.__enter__.return_value = mock_response
-
+async def test_fetch_all_feeds_mapping():
     config = {
         "feeds": [
-            {"name": "Mock Source", "url": "http://localhost/rss.xml"}
+            {"name": "Mock Source", "url": "http://localhost/rss.xml"},
+            {"name": "Down", "url": "http://localhost/down.xml"},
+            {"name": "Broken", "url": "http://localhost/broken.xml"},
         ],
         "max_items": 3
     }
-    
+    answers = {"http://localhost/rss.xml": (MOCK_RSS_DATA.encode("utf-8"), None),
+               "http://localhost/down.xml": (None, "offline"),
+               "http://localhost/broken.xml": (b"<html>", None)}
+
     module = NewsModule(config)
+    module.fetch = AsyncMock(side_effect=lambda url, **kw: answers[url])
     items = await module.fetch_all_feeds(config["feeds"])
-    
+
     assert len(items) == 2
     assert items[0]["source"] == "Mock Source"
     assert items[0]["title"] == "Headline 1 & SVT"
