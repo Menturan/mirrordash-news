@@ -1,6 +1,7 @@
 import pytest
 import json
 import asyncio
+from pathlib import Path
 from unittest.mock import MagicMock, AsyncMock, patch, ANY
 from mirrordash_news.plugin import NewsModule, strip_html, parse_feed_xml
 
@@ -190,3 +191,8 @@ async def test_builtin_feeds_resolution():
     assert called_feeds[1]["url"] == "http://rss.cnn.com/rss/edition.rss"
     assert called_feeds[2]["name"] == "Custom Source"
     assert called_feeds[2]["url"] == "http://localhost/custom.xml"
+
+
+def test_no_never_ending_animation():
+    # A never-ending CSS animation redraws the screen 60 times a second and keeps the Pi warm: the list steps instead
+    assert "infinite" not in (Path(__file__).parents[1] / "mirrordash_news/templates/widget.html").read_text()

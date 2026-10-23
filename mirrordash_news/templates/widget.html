@@ -10,39 +10,33 @@
         
         {% if items %}
             {% if scroll_overflow and height > 0 %}
-                {% set speed_multiplier = 12 if scroll_speed == 'slow' else (4 if scroll_speed == 'fast' else 8) %}
                 <div class="news-scroll-container">
-                    <div class="news-items news-items-scrolling" style="animation-duration: {{ items|length * speed_multiplier }}s;">
-                        <!-- First list -->
-                        <div class="news-items-group">
-                            {% for item in items %}
-                                <div class="news-item">
-                                    <div class="news-meta">
-                                        <span class="news-source">{{ item.source }}</span>
-                                    </div>
-                                    <div class="news-headline">{{ item.title }}</div>
-                                    {% if show_preamble and item.preamble %}
-                                        <div class="news-preamble">{{ item.preamble }}</div>
-                                    {% endif %}
+                    <div class="news-items news-items-scrolling">
+                        {% for item in items %}
+                            <div class="news-item">
+                                <div class="news-meta">
+                                    <span class="news-source">{{ item.source }}</span>
                                 </div>
-                            {% endfor %}
-                        </div>
-                        <!-- Second list for continuous loop -->
-                        <div class="news-items-group" aria-hidden="true">
-                            {% for item in items %}
-                                <div class="news-item">
-                                    <div class="news-meta">
-                                        <span class="news-source">{{ item.source }}</span>
-                                    </div>
-                                    <div class="news-headline">{{ item.title }}</div>
-                                    {% if show_preamble and item.preamble %}
-                                        <div class="news-preamble">{{ item.preamble }}</div>
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-                        </div>
+                                <div class="news-headline">{{ item.title }}</div>
+                                {% if show_preamble and item.preamble %}
+                                    <div class="news-preamble">{{ item.preamble }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
+                <script>
+                    // One headline slides up, then the list stands still (16 = the .news-items gap): a never-ending scroll redrew the whole screen 60 times a second
+                    clearInterval(root._newsTimer);
+                    const list = root.querySelector('.news-items-scrolling');
+                    root._newsTimer = setInterval(() => {
+                        if (root.host.hasAttribute('data-video-is-playing') || list.offsetHeight <= list.parentElement.clientHeight) return;
+                        const first = list.firstElementChild;
+                        list.style.transition = 'transform 0.8s ease-in-out';
+                        list.style.transform = `translateY(-${first.offsetHeight + 16}px)`;
+                        setTimeout(() => { list.style.transition = 'none'; list.append(first); list.style.transform = ''; }, 800);
+                    }, {{ 12 if scroll_speed == 'slow' else (4 if scroll_speed == 'fast' else 8) }} * 1000);
+                </script>
             {% else %}
                 <div class="news-items">
                     {% for item in items %}
@@ -99,20 +93,6 @@
 }
 
 .news-items-scrolling {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    animation: newsScrollVertical linear infinite;
-}
-
-.news-items-scrolling:hover {
-    animation-play-state: paused;
-}
-
-.news-items-group {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
     padding: 16px 0;
 }
 
@@ -164,14 +144,5 @@
 @keyframes newsFadeIn {
     from { opacity: 0; transform: translateY(2px); }
     to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes newsScrollVertical {
-    0% {
-        transform: translateY(0);
-    }
-    100% {
-        transform: translateY(-50%);
-    }
 }
 </style>

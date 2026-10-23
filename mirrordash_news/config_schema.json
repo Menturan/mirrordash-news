@@ -91,7 +91,7 @@
       "type": "boolean",
       "default": false,
       "title": "Auto-scroll Overflow",
-      "description": "Enable vertical auto-scrolling. Requires a height limit greater than 0."
+      "description": "When the headlines do not fit, the next one slides up now and then. Requires a height limit greater than 0."
     },
     "scroll_speed": {
       "type": "string",
@@ -102,7 +102,7 @@
         "fast"
       ],
       "title": "Scroll Speed",
-      "description": "Speed of the auto-scrolling animation."
+      "description": "How long each headline stands still before the next slides up: slow 12 s, medium 8 s, fast 4 s."
     }
   },
   "required": [
