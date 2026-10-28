@@ -139,7 +139,6 @@ async def test_scrolling_and_pixel_dimensions():
         scroll_overflow=True,
         scroll_speed="slow",
         error=None,
-        last_checked=ANY,
         show_header=True
     )
 

@@ -3,7 +3,6 @@ import logging
 import xml.etree.ElementTree as ET
 import re
 import html
-from datetime import datetime
 
 logger = logging.getLogger("mirrordash.modules.mirrordash_news")
 
@@ -182,7 +181,6 @@ class NewsModule:
                 scroll_overflow=self.scroll_overflow,
                 scroll_speed=self.scroll_speed,
                 error=self.translate("error_fetching", "Error loading news") if len(news_items) == 0 else None,
-                last_checked=datetime.now().strftime("%H:%M"),
                 show_header=show_header
             )
         except Exception as fetch_err:

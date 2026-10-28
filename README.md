@@ -20,4 +20,4 @@ Developing it: `uv run pytest` runs its tests, and `uvx mirrordash-sdk validate 
 ![News Widget Screenshot](screenshot.png)
 
 ## License
-[PolyForm Noncommercial License 1.0.0](LICENSE.md)
+[MIT](LICENSE)
