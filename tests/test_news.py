@@ -1,8 +1,6 @@
 import pytest
-import json
-import asyncio
 from pathlib import Path
-from unittest.mock import MagicMock, AsyncMock, patch, ANY
+from unittest.mock import MagicMock, AsyncMock, ANY
 from mirrordash_news.plugin import NewsModule, strip_html, parse_feed_xml
 
 MOCK_RSS_DATA = """<?xml version="1.0" encoding="utf-8" ?>
@@ -83,7 +81,7 @@ async def test_fetch_all_feeds_mapping():
     assert items[0]["title"] == "Headline 1 & SVT"
 
 @pytest.mark.asyncio
-async def test_run_loop_missing_feeds():
+async def test_render_missing_feeds():
     config = {
         "feeds": [],
         "builtin_feeds": []
@@ -91,17 +89,9 @@ async def test_run_loop_missing_feeds():
     module = NewsModule(config)
     module.render_template = MagicMock(return_value="<div>No Feeds</div>")
     
-    broadcast_func = AsyncMock()
-    
-    with patch("asyncio.sleep", side_effect=asyncio.CancelledError):
-        try:
-            await module.run_loop(broadcast_func)
-        except asyncio.CancelledError:
-            pass
+    html = await module.render()
             
-    broadcast_func.assert_called_once()
-    args = broadcast_func.call_args[0]
-    assert "No Feeds" in args[1]
+    assert "No Feeds" in html
     module.render_template.assert_called_with(
         "widget.html",
         error="No feeds configured",
@@ -132,20 +122,14 @@ async def test_scrolling_and_pixel_dimensions():
     assert module.scroll_speed == "slow"
 
     module.render_template = MagicMock(return_value="<div>Rendered</div>")
-    broadcast_func = AsyncMock()
-
     # Mock fetch_all_feeds to return some mock news items
     module.fetch_all_feeds = AsyncMock(return_value=[
         {"title": "Test Title", "preamble": "Test description", "source": "Source 1"}
     ])
 
-    with patch("asyncio.sleep", side_effect=asyncio.CancelledError):
-        try:
-            await module.run_loop(broadcast_func)
-        except asyncio.CancelledError:
-            pass
+    html = await module.render()
 
-    broadcast_func.assert_called_once()
+    assert html == "<div>Rendered</div>"
     module.render_template.assert_called_with(
         "widget.html",
         items=[{"title": "Test Title", "preamble": "Test description", "source": "Source 1"}],
@@ -172,13 +156,7 @@ async def test_builtin_feeds_resolution():
     
     module.fetch_all_feeds = AsyncMock(return_value=[])
     module.render_template = MagicMock(return_value="<div>Rendered</div>")
-    broadcast_func = AsyncMock()
-    
-    with patch("asyncio.sleep", side_effect=asyncio.CancelledError):
-        try:
-            await module.run_loop(broadcast_func)
-        except asyncio.CancelledError:
-            pass
+    await module.render()
             
     # fetch_all_feeds should be called with resolved list
     # sr_ekot + cnn_edition + Custom Source

@@ -128,7 +128,7 @@ class NewsModule:
         async def fetch_one(feed_config):
             name = feed_config["name"]
             url = feed_config["url"]
-            data, error = await self.fetch(url, timeout=8, max_age=self.interval)  # the last answer if the feed is down
+            data, error = await self.fetch(url, timeout=8)  # the last answer if the feed is down; a young one is reused
             try:
                 items = parse_feed_xml(data) if data else []
             except ET.ParseError as e:
@@ -150,69 +150,50 @@ class NewsModule:
                     all_items.append(sublist[i])
         return all_items
 
-    async def run_loop(self, broadcast_func):
-        logger.info(f"Starting {self.name} run loop")
-        while True:
-            try:
-                builtin_keys = self.config.get("builtin_feeds", ["bbc_news"])
-                custom_feeds = self.config.get("custom_feeds", self.config.get("feeds", []))
-                feed_configs = [BUILTIN_FEED_MAP[key] for key in builtin_keys if key in BUILTIN_FEED_MAP] + custom_feeds
-                max_items = self.config.get("max_items", 5)
-                show_preamble = self.config.get("show_preamble", True)
-                show_header = self.config.get("show_header", True)
-                
-                # Check for feeds
-                if not feed_configs:
-                    html = self.render_template(
-                        "widget.html",
-                        error=self.translate("no_feeds", "No feeds configured"),
-                        items=[],
-                        width=self.width,
-                        height=self.height,
-                        scroll_overflow=self.scroll_overflow,
-                        scroll_speed=self.scroll_speed,
-                        show_header=show_header
-                    )
-                    await broadcast_func(self.name, html)
-                    await asyncio.sleep(self.interval)
-                    continue
+    async def render(self) -> str:
+        builtin_keys = self.config.get("builtin_feeds", ["bbc_news"])
+        custom_feeds = self.config.get("custom_feeds", self.config.get("feeds", []))
+        feed_configs = [BUILTIN_FEED_MAP[key] for key in builtin_keys if key in BUILTIN_FEED_MAP] + custom_feeds
+        max_items = self.config.get("max_items", 5)
+        show_preamble = self.config.get("show_preamble", True)
+        show_header = self.config.get("show_header", True)
 
-                try:
-                    news_items = await self.fetch_all_feeds(feed_configs)
-                    # Limit items
-                    news_items = news_items[:max_items]
-                    
-                    html = self.render_template(
-                        "widget.html",
-                        items=news_items,
-                        show_preamble=show_preamble,
-                        width=self.width,
-                        height=self.height,
-                        scroll_overflow=self.scroll_overflow,
-                        scroll_speed=self.scroll_speed,
-                        error=self.translate("error_fetching", "Error loading news") if len(news_items) == 0 else None,
-                        last_checked=datetime.now().strftime("%H:%M"),
-                        show_header=show_header
-                    )
-                except Exception as fetch_err:
-                    logger.error(f"Error fetching news feeds: {fetch_err}")
-                    html = self.render_template(
-                        "widget.html",
-                        items=[],
-                        error=self.translate("error_fetching", "Error loading news"),
-                        width=self.width,
-                        height=self.height,
-                        scroll_overflow=self.scroll_overflow,
-                        scroll_speed=self.scroll_speed,
-                        show_header=show_header
-                    )
-                
-                await broadcast_func(self.name, html)
-                
-            except asyncio.CancelledError:
-                logger.info(f"Stopping {self.name} run loop.")
-                raise
-            except Exception as e:
-                logger.error(f"Error in module {self.name} run_loop: {e}")
-                
-            await asyncio.sleep(self.interval)
+        # Check for feeds
+        if not feed_configs:
+            return self.render_template(
+                "widget.html",
+                error=self.translate("no_feeds", "No feeds configured"),
+                items=[],
+                width=self.width,
+                height=self.height,
+                scroll_overflow=self.scroll_overflow,
+                scroll_speed=self.scroll_speed,
+                show_header=show_header
+            )
+
+        try:
+            news_items = (await self.fetch_all_feeds(feed_configs))[:max_items]
+            return self.render_template(
+                "widget.html",
+                items=news_items,
+                show_preamble=show_preamble,
+                width=self.width,
+                height=self.height,
+                scroll_overflow=self.scroll_overflow,
+                scroll_speed=self.scroll_speed,
+                error=self.translate("error_fetching", "Error loading news") if len(news_items) == 0 else None,
+                last_checked=datetime.now().strftime("%H:%M"),
+                show_header=show_header
+            )
+        except Exception as fetch_err:
+            logger.error(f"Error fetching news feeds: {fetch_err}")
+            return self.render_template(
+                "widget.html",
+                items=[],
+                error=self.translate("error_fetching", "Error loading news"),
+                width=self.width,
+                height=self.height,
+                scroll_overflow=self.scroll_overflow,
+                scroll_speed=self.scroll_speed,
+                show_header=show_header
+            )
