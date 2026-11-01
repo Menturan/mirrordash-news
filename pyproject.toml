@@ -1,6 +1,6 @@
 [project]
 name = "mirrordash-news"
-version = "1.2.1"
+version = "1.2.2"
 description = "Fetches and displays news headlines and preambles from configurable RSS/Atom feeds."
 requires-python = ">=3.14"
 license = "MIT"
