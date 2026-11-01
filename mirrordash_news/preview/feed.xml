@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>Sample news</title>
+<item><title>Ny cykelbana öppnar längs vattnet</title><description>Den nya sträckan knyter ihop två stadsdelar.</description><link>https://example.org/0</link><pubDate>2026-11-02T08:00:00+01:00</pubDate></item>
+<item><title>Biblioteket förlänger öppettiderna i vinter</title><description>Kvällsöppet tre dagar i veckan från december.</description><link>https://example.org/1</link><pubDate>2026-11-02T09:00:00+01:00</pubDate></item>
+<item><title>Rekordmånga besökte höstmarknaden</title><description>Arrangörerna räknade till drygt 12 000 besökare.</description><link>https://example.org/2</link><pubDate>2026-11-02T10:00:00+01:00</pubDate></item>
+<item><title>Forskare kartlägger stadens fåglar</title><description>Invånare bjuds in att rapportera vad de ser.</description><link>https://example.org/3</link><pubDate>2026-11-02T11:00:00+01:00</pubDate></item>
+<item><title>Ny tidtabell för pendelbåtarna</title><description>Tätare turer på morgonen från och med måndag.</description><link>https://example.org/4</link><pubDate>2026-11-02T12:00:00+01:00</pubDate></item>
+<item><title>Skolor testar utomhuslektioner</title><description>Målet är mer rörelse under skoldagen.</description><link>https://example.org/5</link><pubDate>2026-11-02T13:00:00+01:00</pubDate></item>
+</channel></rss>
