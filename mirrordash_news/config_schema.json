@@ -4,12 +4,6 @@
   "description": "Headlines from the news feeds you choose.",
   "type": "object",
   "properties": {
-    "interval": {
-      "type": "integer",
-      "default": 600,
-      "title": "Update Interval (Seconds)",
-      "description": "Time to wait between feed updates (e.g. 600 = 10 minutes)."
-    },
     "max_items": {
       "type": "integer",
       "default": 5,
@@ -73,20 +67,6 @@
         ]
       }
     },
-    "width": {
-      "type": "integer",
-      "default": 420,
-      "minimum": 100,
-      "title": "Width (px)",
-      "description": "Width of the news widget in pixels."
-    },
-    "height": {
-      "type": "integer",
-      "default": 300,
-      "minimum": 0,
-      "title": "Height (px)",
-      "description": "Height limit in pixels. Use 0 for no height limit (auto height)."
-    },
     "scroll_overflow": {
       "type": "boolean",
       "default": false,
@@ -102,7 +82,35 @@
         "fast"
       ],
       "title": "Scroll Speed",
-      "description": "How long each headline stands still before the next slides up: slow 12 s, medium 8 s, fast 4 s."
+      "description": "How long each headline stands still before the next slides up: slow 12 s, medium 8 s, fast 4 s.",
+      "show_if": {
+        "scroll_overflow": [
+          true
+        ]
+      }
+    },
+    "width": {
+      "type": "integer",
+      "default": 420,
+      "minimum": 100,
+      "title": "Width (px)",
+      "description": "Width of the news widget in pixels.",
+      "group": "Size"
+    },
+    "height": {
+      "type": "integer",
+      "default": 300,
+      "minimum": 0,
+      "title": "Height (px)",
+      "description": "Height limit in pixels. Use 0 for no height limit (auto height).",
+      "group": "Size"
+    },
+    "interval": {
+      "type": "integer",
+      "default": 600,
+      "title": "Update Interval (Seconds)",
+      "description": "Time to wait between feed updates (e.g. 600 = 10 minutes).",
+      "group": "Advanced"
     }
   },
   "required": [
