@@ -87,7 +87,12 @@
         "scroll_overflow": [
           true
         ]
-      }
+      },
+      "enum_titles": [
+        "Slow",
+        "Medium",
+        "Fast"
+      ]
     },
     "width": {
       "type": "integer",
