@@ -96,6 +96,8 @@ BUILTIN_FEED_MAP = {
     }
 }
 
+DISPLAY_MODES = ("list", "slide_up", "fade_one", "fade_page")
+
 class NewsModule:
     def __init__(self, config):
         self.config = config
@@ -110,8 +112,10 @@ class NewsModule:
         # Dimensions and scrolling
         self.width = config.get("width", 420)
         self.height = config.get("height", 300)
-        self.scroll_overflow = config.get("scroll_overflow", False)
-        self.scroll_speed = config.get("scroll_speed", "medium")
+        # display_mode has no schema default: an instance saved before it existed only has scroll_overflow
+        mode = config.get("display_mode") or ("slide_up" if config.get("scroll_overflow") else "list")
+        self.display_mode = mode if mode in DISPLAY_MODES else "list"
+        self.scroll_speed = config.get("scroll_speed", "auto")
         
         logger.info(f"Initializing {self.name} module")
 
@@ -165,7 +169,7 @@ class NewsModule:
                 items=[],
                 width=self.width,
                 height=self.height,
-                scroll_overflow=self.scroll_overflow,
+                display_mode=self.display_mode,
                 scroll_speed=self.scroll_speed,
                 show_header=show_header
             )
@@ -178,7 +182,7 @@ class NewsModule:
                 show_preamble=show_preamble,
                 width=self.width,
                 height=self.height,
-                scroll_overflow=self.scroll_overflow,
+                display_mode=self.display_mode,
                 scroll_speed=self.scroll_speed,
                 error=self.translate("error_fetching", "Error loading news") if len(news_items) == 0 else None,
                 show_header=show_header
@@ -191,7 +195,7 @@ class NewsModule:
                 error=self.translate("error_fetching", "Error loading news"),
                 width=self.width,
                 height=self.height,
-                scroll_overflow=self.scroll_overflow,
+                display_mode=self.display_mode,
                 scroll_speed=self.scroll_speed,
                 show_header=show_header
             )

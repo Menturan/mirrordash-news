@@ -67,28 +67,43 @@
         ]
       }
     },
-    "scroll_overflow": {
-      "type": "boolean",
-      "default": false,
-      "title": "Auto-scroll Overflow",
-      "description": "When the headlines do not fit, the next one slides up now and then. Requires a height limit greater than 0."
+    "display_mode": {
+      "type": "string",
+      "enum": [
+        "list",
+        "slide_up",
+        "fade_one",
+        "fade_page"
+      ],
+      "title": "Display Mode",
+      "description": "How the headlines are shown. Slide up and both Fade modes rotate through the headlines and need a height limit greater than 0. Fade (page) shows as many headlines as fit, then fades to the next set.",
+      "enum_titles": [
+        "List",
+        "Slide up",
+        "Fade (one at a time)",
+        "Fade (page)"
+      ]
     },
     "scroll_speed": {
       "type": "string",
-      "default": "medium",
+      "default": "auto",
       "enum": [
+        "auto",
         "slow",
         "medium",
         "fast"
       ],
       "title": "Scroll Speed",
-      "description": "How long each headline stands still before the next slides up: slow 12 s, medium 8 s, fast 4 s.",
+      "description": "How long each headline stays. Auto gives each one time to be read from its length (4\u201320 s, a page at most 45 s); slow 12 s, medium 8 s, fast 4 s.",
       "show_if": {
-        "scroll_overflow": [
-          true
+        "display_mode": [
+          "slide_up",
+          "fade_one",
+          "fade_page"
         ]
       },
       "enum_titles": [
+        "Auto",
         "Slow",
         "Medium",
         "Fast"
@@ -122,7 +137,6 @@
     "interval",
     "width",
     "height",
-    "scroll_overflow",
     "scroll_speed",
     "builtin_feeds",
     "custom_feeds"

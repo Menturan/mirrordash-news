@@ -6,6 +6,8 @@ An RSS and Atom news feed reader module for MirrorDash. It fetches headlines and
 - **RSS & Atom Support**: Clean XML parsing that supports standard RSS channels and Atom entry namespaces.
 - **HTML/XML Tag Stripping**: Automatically cleans up and strips HTML tags, formatting entities, and extra whitespace from titles and preambles.
 - **Parallel Fetching**: Loads all configured news sources simultaneously in background threads for rapid refreshes.
+- **Display Modes**: show the headlines as a plain list, slide the next one up, fade through them one at a time, or fade page by page (as many headlines as fit, then the next set). The rotating modes need a height limit greater than 0; with no limit they show the plain list. Nothing animates continuously, only short transitions between still moments.
+- **Auto Speed**: with speed set to Auto, each headline stays long enough to be read, from the words actually visible (4-20 s; a page at most 45 s). Slow, medium and fast use a fixed 12, 8 or 4 s per headline.
 - **Glanceable HUD Design**: wraps text cleanly and cuts long summaries after three lines.
 
 ## Installation
