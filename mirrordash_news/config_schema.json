@@ -77,7 +77,8 @@
         "fade_page"
       ],
       "title": "Display Mode",
-      "description": "How the headlines are shown. Slide up and both Fade modes rotate through the headlines and need a height limit greater than 0. Fade (page) shows as many headlines as fit, then fades to the next set.",
+      "description": "How the headlines are shown; some modes need a height limit.",
+      "help": "Slide up and both Fade modes rotate through the headlines and need a height limit greater than 0. Fade (page) shows as many headlines as fit, then fades to the next set.",
       "enum_titles": [
         "List",
         "Slide up",
@@ -95,7 +96,8 @@
         "fast"
       ],
       "title": "Scroll Speed",
-      "description": "How long each headline stays. Auto gives each one time to be read from its length (4\u201320 s, a page at most 45 s); slow 12 s, medium 8 s, fast 4 s.",
+      "description": "How long each headline stays on screen.",
+      "help": "Auto gives each one time to be read from its length (4\u201320 s, a page at most 45 s); slow 12 s, medium 8 s, fast 4 s.",
       "show_if": {
         "display_mode": [
           "slide_up",
