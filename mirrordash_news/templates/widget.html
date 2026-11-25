@@ -9,9 +9,9 @@
     {% endif %}
 </div>
 {% endmacro %}
-<div class="news-container" style="width: {{ width }}px; {% if height > 0 %}height: {{ height }}px;{% endif %}">
+<div class="news-container{% if layout != 'list' %} news-rotating{% endif %}">
     {% if show_header and (not error or items) %}
-        <h2 class="module-header">{{ translations.get("title", "Latest News") }}</h2>
+        <h2 class="module-header">{{ heading or translations.get("title", "Latest News") }}</h2>
     {% endif %}
     
     <div class="news-body">
@@ -20,8 +20,8 @@
         {% endif %}
         
         {% if items %}
-            {% if display_mode != 'list' and height > 0 %}
-                <div class="news-scroll-container news-{{ display_mode }}" data-mode="{{ display_mode }}" data-speed="{{ scroll_speed }}">
+            {% if layout != 'list' %}
+                <div class="news-scroll-container news-{{ layout }}" data-mode="{{ layout }}" data-speed="{{ scroll_speed }}">
                     <div class="news-items news-items-rotating">
                         {% for item in items %}{{ news_item(item) }}{% endfor %}
                     </div>
@@ -29,7 +29,7 @@
                 <script>
                     // Chained timeouts, not an interval: each headline (or page) stays as long as it takes to read it. No continuous animation: a short transition, then still (it redrew the whole screen 60 times a second)
                     clearTimeout(root._newsTimer);
-                    const mode = {{ display_mode|tojson }}, speed = {{ scroll_speed|tojson }};
+                    const mode = {{ layout|tojson }}, speed = {{ scroll_speed|tojson }};
                     const FIXED = { slow: 12000, medium: 8000, fast: 4000 };
                     const GAP = 16, PAGE_MAX = 45000;  // GAP = the .news-items gap
                     const list = root.querySelector('.news-items-rotating'), box = list.parentElement;
@@ -104,6 +104,14 @@
     flex-direction: column;
     color: var(--color-standard-gray, #999999);
     box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* The rotating looks measure how much fits, so they stop at the card's largest height themselves */
+.news-rotating {
+    max-height: var(--md-card-max-height, 50vh);
+    overflow: hidden;
 }
 
 .news-body {
@@ -126,8 +134,8 @@
     overflow: hidden;
     position: relative;
     flex: 1;
+    min-height: 0;
     width: 100%;
-    
 }
 
 /* Slide up only: top/bottom gradient masks fade the items that slide in and out */

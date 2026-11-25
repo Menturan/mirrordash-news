@@ -1,31 +1,25 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "News",
-  "requires_mirrordash": "0.13",
+  "requires_mirrordash": "0.21",
   "description": "Headlines from the news feeds you choose.",
   "type": "object",
   "properties": {
     "max_items": {
       "type": "integer",
       "default": 5,
-      "title": "Max Headlines",
+      "title": "Max headlines",
       "description": "Maximum number of news headlines to display."
     },
     "show_preamble": {
       "type": "boolean",
       "default": true,
-      "title": "Show Preamble",
+      "title": "Show preamble",
       "description": "Show a brief summary description under the headline."
-    },
-    "show_header": {
-      "type": "boolean",
-      "default": true,
-      "title": "Show Header",
-      "description": "Show or hide the module's header/title."
     },
     "builtin_feeds": {
       "type": "array",
-      "title": "Built-in Feeds",
+      "title": "Built-in feeds",
       "description": "Select from our list of pre-configured Swedish and International news feeds.",
       "default": [
         "bbc_news"
@@ -45,7 +39,7 @@
     },
     "custom_feeds": {
       "type": "array",
-      "title": "Custom News Feeds",
+      "title": "Custom news feeds",
       "description": "Add your own XML RSS or Atom feed URLs.",
       "default": [],
       "items": {
@@ -53,7 +47,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "title": "Source Name",
+            "title": "Source name",
             "description": "Friendly name of the news source (e.g., SVT Nyheter)."
           },
           "url": {
@@ -65,10 +59,11 @@
         "required": [
           "name",
           "url"
-        ]
+        ],
+        "title": "Feed"
       }
     },
-    "display_mode": {
+    "layout": {
       "type": "string",
       "enum": [
         "list",
@@ -76,15 +71,16 @@
         "fade_one",
         "fade_page"
       ],
-      "title": "Display Mode",
-      "description": "How the headlines are shown; some modes need a height limit.",
-      "help": "Slide up and both Fade modes rotate through the headlines and need a height limit greater than 0. Fade (page) shows as many headlines as fit, then fades to the next set.",
+      "title": "Look",
+      "description": "How the headlines are shown.",
+      "help": "Slide up and both Fade looks rotate through the headlines that fit in the card; the rest wait their turn. Fade (page) shows as many headlines as fit, then fades to the next set. List shows them all and fades out at the bottom of the card.",
       "enum_titles": [
         "List",
         "Slide up",
         "Fade (one at a time)",
         "Fade (page)"
-      ]
+      ],
+      "default": "list"
     },
     "scroll_speed": {
       "type": "string",
@@ -95,11 +91,11 @@
         "medium",
         "fast"
       ],
-      "title": "Scroll Speed",
+      "title": "Scroll speed",
       "description": "How long each headline stays on screen.",
-      "help": "Auto gives each one time to be read from its length (4\u201320 s, a page at most 45 s); slow 12 s, medium 8 s, fast 4 s.",
+      "help": "Auto gives each one time to be read from its length (4–20 s, a page at most 45 s); slow 12 s, medium 8 s, fast 4 s.",
       "show_if": {
-        "display_mode": [
+        "layout": [
           "slide_up",
           "fade_one",
           "fade_page"
@@ -112,34 +108,16 @@
         "Fast"
       ]
     },
-    "width": {
-      "type": "integer",
-      "default": 420,
-      "minimum": 100,
-      "title": "Width (px)",
-      "description": "Width of the news widget in pixels.",
-      "group": "Size"
-    },
-    "height": {
-      "type": "integer",
-      "default": 300,
-      "minimum": 0,
-      "title": "Height (px)",
-      "description": "Height limit in pixels. Use 0 for no height limit (auto height).",
-      "group": "Size"
-    },
     "interval": {
       "type": "integer",
       "default": 600,
-      "title": "Update Interval (Seconds)",
-      "description": "Time to wait between feed updates (e.g. 600 = 10 minutes).",
-      "group": "Advanced"
+      "title": "Update interval",
+      "description": "Time to wait between feed updates (600 seconds = 10 minutes).",
+      "unit": "s"
     }
   },
   "required": [
     "interval",
-    "width",
-    "height",
     "scroll_speed",
     "builtin_feeds",
     "custom_feeds"

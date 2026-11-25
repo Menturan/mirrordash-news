@@ -96,7 +96,7 @@ BUILTIN_FEED_MAP = {
     }
 }
 
-DISPLAY_MODES = ("list", "slide_up", "fade_one", "fade_page")
+LAYOUTS = ("list", "slide_up", "fade_one", "fade_page")
 
 class NewsModule:
     def __init__(self, config):
@@ -109,12 +109,8 @@ class NewsModule:
         self.translations = config.get("translations", {})
         self.event_bus = config.get("event_bus")
         
-        # Dimensions and scrolling
-        self.width = config.get("width", 420)
-        self.height = config.get("height", 300)
-        # display_mode has no schema default: an instance saved before it existed only has scroll_overflow
-        mode = config.get("display_mode") or ("slide_up" if config.get("scroll_overflow") else "list")
-        self.display_mode = mode if mode in DISPLAY_MODES else "list"
+        mode = config.get("layout", "list")
+        self.layout = mode if mode in LAYOUTS else "list"
         self.scroll_speed = config.get("scroll_speed", "auto")
         
         logger.info(f"Initializing {self.name} module")
@@ -159,7 +155,6 @@ class NewsModule:
         feed_configs = [BUILTIN_FEED_MAP[key] for key in builtin_keys if key in BUILTIN_FEED_MAP] + custom_feeds
         max_items = self.config.get("max_items", 5)
         show_preamble = self.config.get("show_preamble", True)
-        show_header = self.config.get("show_header", True)
 
         # Check for feeds
         if not feed_configs:
@@ -167,11 +162,8 @@ class NewsModule:
                 "widget.html",
                 error=self.translate("no_feeds", "No feeds configured"),
                 items=[],
-                width=self.width,
-                height=self.height,
-                display_mode=self.display_mode,
-                scroll_speed=self.scroll_speed,
-                show_header=show_header
+                layout=self.layout,
+                scroll_speed=self.scroll_speed
             )
 
         try:
@@ -180,12 +172,9 @@ class NewsModule:
                 "widget.html",
                 items=news_items,
                 show_preamble=show_preamble,
-                width=self.width,
-                height=self.height,
-                display_mode=self.display_mode,
+                layout=self.layout,
                 scroll_speed=self.scroll_speed,
-                error=self.translate("error_fetching", "Error loading news") if len(news_items) == 0 else None,
-                show_header=show_header
+                error=self.translate("error_fetching", "Error loading news") if len(news_items) == 0 else None
             )
         except Exception as fetch_err:
             logger.error(f"Error fetching news feeds: {fetch_err}")
@@ -193,9 +182,6 @@ class NewsModule:
                 "widget.html",
                 items=[],
                 error=self.translate("error_fetching", "Error loading news"),
-                width=self.width,
-                height=self.height,
-                display_mode=self.display_mode,
-                scroll_speed=self.scroll_speed,
-                show_header=show_header
+                layout=self.layout,
+                scroll_speed=self.scroll_speed
             )

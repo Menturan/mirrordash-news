@@ -96,29 +96,22 @@ async def test_render_missing_feeds():
         "widget.html",
         error="No feeds configured",
         items=[],
-        width=420,
-        height=300,
-        display_mode="list",
-        scroll_speed="auto",
-        show_header=True
+        layout="list",
+        scroll_speed="auto"
     )
 
 @pytest.mark.asyncio
-async def test_scrolling_and_pixel_dimensions():
+async def test_layout_and_scroll_speed():
     config = {
         "feeds": [
             {"name": "Source 1", "url": "http://localhost/rss.xml"}
         ],
         "max_items": 5,
-        "width": 500,
-        "height": 400,
-        "display_mode": "slide_up",
+        "layout": "slide_up",
         "scroll_speed": "slow"
     }
     module = NewsModule(config)
-    assert module.width == 500
-    assert module.height == 400
-    assert module.display_mode == "slide_up"
+    assert module.layout == "slide_up"
     assert module.scroll_speed == "slow"
 
     module.render_template = MagicMock(return_value="<div>Rendered</div>")
@@ -134,12 +127,9 @@ async def test_scrolling_and_pixel_dimensions():
         "widget.html",
         items=[{"title": "Test Title", "preamble": "Test description", "source": "Source 1"}],
         show_preamble=True,
-        width=500,
-        height=400,
-        display_mode="slide_up",
+        layout="slide_up",
         scroll_speed="slow",
-        error=None,
-        show_header=True
+        error=None
     )
 
 @pytest.mark.asyncio
@@ -175,15 +165,13 @@ def test_no_never_ending_animation():
     assert "infinite" not in (Path(__file__).parents[1] / "mirrordash_news/templates/widget.html").read_text()
 
 
-@pytest.mark.parametrize("config, mode", [
-    ({"scroll_overflow": True}, "slide_up"),      # saved before display_mode existed
-    ({"scroll_overflow": False}, "list"),
+@pytest.mark.parametrize("config, layout", [
     ({}, "list"),
-    ({"display_mode": "fade_page", "scroll_overflow": True}, "fade_page"),  # an explicit mode wins
-    ({"display_mode": "bogus", "scroll_overflow": True}, "list"),
+    ({"layout": "fade_page"}, "fade_page"),
+    ({"layout": "bogus"}, "list"),
 ])
-def test_display_mode_derivation(config, mode):
-    assert NewsModule(config).display_mode == mode
+def test_layout(config, layout):
+    assert NewsModule(config).layout == layout
 
 
 async def render_real(config):
@@ -191,32 +179,30 @@ async def render_real(config):
     from jinja2 import Environment, FileSystemLoader
     env = Environment(loader=FileSystemLoader(Path(__file__).parents[1] / "mirrordash_news/templates"), autoescape=True)
     module = NewsModule({"builtin_feeds": [], "custom_feeds": [{"name": "S", "url": "http://x"}], **config})
-    module.render_template = lambda name, **ctx: env.get_template(name).render(translations={}, **ctx)
+    module.render_template = lambda name, **ctx: env.get_template(name).render(translations={}, show_header=config.get("show_header", True), heading=config.get("heading", ""), **ctx)
     module.fetch_all_feeds = AsyncMock(return_value=[{"title": "T", "preamble": "P", "source": "S"}])
     return await module.render()
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("config, mode", [
-    ({"scroll_overflow": True}, "slide_up"),
-    ({"display_mode": "fade_one"}, "fade_one"),
-    ({"display_mode": "fade_page", "scroll_speed": "fast"}, "fade_page"),
-])
-async def test_rotating_modes_render_markers(config, mode):
-    html = await render_real({"height": 300, **config})
-    assert f'data-mode="{mode}"' in html
-    assert f'data-speed="{config.get("scroll_speed", "auto")}"' in html
-    assert "news-items-rotating" in html
+@pytest.mark.parametrize("layout", ["slide_up", "fade_one", "fade_page"])
+async def test_rotating_layouts_render_markers(layout):
+    html = await render_real({"layout": layout, "scroll_speed": "fast"})
+    assert f'data-mode="{layout}"' in html
+    assert 'data-speed="fast"' in html
+    assert "news-items-rotating" in html and "news-rotating" in html
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("config", [
-    {"display_mode": "fade_page", "height": 0},
-    {"display_mode": "slide_up", "height": 0},
-    {"display_mode": "list", "height": 300},
-])
-async def test_static_list_when_not_rotating(config):
-    html = await render_real(config)
+async def test_list_is_static_and_left_to_the_card_to_fade():
+    html = await render_real({"layout": "list"})
     assert "data-mode=" not in html
     assert "root._newsTimer" not in html
     assert 'class="news-items"' in html
+    assert "news-rotating" not in html.split("<style>")[0]
+
+
+@pytest.mark.asyncio
+async def test_heading_replaces_the_title():
+    assert "My news" in await render_real({"show_header": True, "heading": "My news"})
+    assert "module-header" not in await render_real({"show_header": False})
