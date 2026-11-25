@@ -206,3 +206,10 @@ async def test_list_is_static_and_left_to_the_card_to_fade():
 async def test_heading_replaces_the_title():
     assert "My news" in await render_real({"show_header": True, "heading": "My news"})
     assert "module-header" not in await render_real({"show_header": False})
+
+
+def test_news_fades_its_overflow_by_default_because_the_looks_rotate_themselves():
+    import json
+    import mirrordash_news
+    schema = json.loads((Path(mirrordash_news.__file__).parent / "config_schema.json").read_text())
+    assert schema["properties"]["overflow"] == {"default": "fade"}

@@ -114,7 +114,8 @@
       "title": "Update interval",
       "description": "Time to wait between feed updates (600 seconds = 10 minutes).",
       "unit": "s"
-    }
+    },
+    "overflow": {"default": "fade"}
   },
   "required": [
     "interval",
